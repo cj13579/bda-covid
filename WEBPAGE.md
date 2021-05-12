@@ -1,3 +1,6 @@
+---
+title: Bermuda COVID-19 Statistics
+---
 <script src="https://code.highcharts.com/highcharts.js">
 </script>
 <script src="https://code.highcharts.com/modules/exporting.js">
@@ -10,7 +13,7 @@
 </script>
 # Bermuda COVID-19 Statistics
 
-The daily press-releases and conferences are great and frustrating all at the same time. Tell you a lot of information but not, what I think, is the really useful and important stuff. This is an attempted to break down the numbers released into some more useful things:
+The daily press-releases and conferences are great and frustrating all at the same time. They tell you a lot of information but not, what I think, is the really useful and important stuff. This is an attempt to break down the numbers released into some more useful things:
 
 * **Moving averages - **Data is noisy. Calculating simple moving averages (I use 7 days windows) gives us a much clearer view about where a data point is trending.
 * **New metrics** - The Government have made decisions on positivity rate previously but they have only very recently started releasing this number. I have back dated the calculation to the beginning of th year.
