@@ -49,7 +49,7 @@ posRateOptions = {
             text: "Daily and 7 day rolling average of Bermuda's COVID-19 positivity rates."
         },
         data: {
-            csvURL: 'http://0.0.0.0:8000/csv/positivity_rate.csv',
+            csvURL: 'https://raw.githubusercontent.com/cj13579/bda-covid/main/csv/positivity_rate.csv',
         }
     }
     newPositiveCasesOptions = {
@@ -68,7 +68,7 @@ posRateOptions = {
         text: "Daily and 7 day rolling average of Bermuda's COVID-19 new positive cases."
     },
     data: {
-        csvURL: 'http://0.0.0.0:8000/csv/positive_cases.csv',
+        csvURL: 'https://raw.githubusercontent.com/cj13579/bda-covid/main/csv/positive_cases.csv',
     }
 }
 activeCasesOptions = {
@@ -87,7 +87,7 @@ activeCasesOptions = {
         text: "Daily and 7 day rolling average of Bermuda's COVID-19 active COVID-19 cases."
     },
     data: {
-        csvURL: 'http://0.0.0.0:8000/csv/active_cases.csv',
+        csvURL: 'https://raw.githubusercontent.com/cj13579/bda-covid/main/csv/active_cases.csv',
     }
 }
 Highcharts.chart('posRateContainer', posRateOptions);
