@@ -76,7 +76,8 @@ def commitAndPush():
     commit_msg = "Add data from {}".format(date)
     repo.index.commit(commit_msg)
     origin = repo.remotes['origin']
-    origin.push()
+    if not origin.push():
+        print("Unable to send new data")
 
 def getDailyRelease(day, month, year):
 
