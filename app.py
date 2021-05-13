@@ -11,8 +11,8 @@ def getDailyRelease(day, month, year):
     # gets the data from the html file if it exists and returns a content object
     # otherwise returns None
 
-    home = os.getcwd()
-    file = "src/covid-19-daily-release-{}-{}-{}".format(day, month, year)
+    home = os.path.join(os.getcwd(), 'src')
+    file = "covid-19-daily-release-{}-{}-{}".format(day, month, year)
     s = requests.Session()
     s.mount('file://', FileAdapter())
     r = s.get('file://{}/{}'.format(home, file))
@@ -20,7 +20,7 @@ def getDailyRelease(day, month, year):
     if r.status_code == 200: 
         return r.content
 
-    file = "src/covid-19-update-minister-healths-remarks-{}-{}-{}".format(day, month, year)
+    file = "covid-19-update-minister-healths-remarks-{}-{}-{}".format(day, month, year)
     s = requests.Session()
     s.mount('file://', FileAdapter())
     r = s.get('file://{}/{}'.format(home, file))
