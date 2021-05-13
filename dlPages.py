@@ -26,9 +26,6 @@ def downloadFiles():
                     break
             if found:
                 continue
-
-            # tell the world
-            print("Getting data for {} {} {}".format(i, month, y))
         
             # check if the date is a valid date. do this cos im just iterating ha
             try:
@@ -38,6 +35,9 @@ def downloadFiles():
 
             # if its a valid date and its less than or equal to today then do something
             if date <= datetime.date.today():
+
+                # tell the world
+                print("Getting data for {} {} {}".format(i, month, y))
 
                 url = 'https://www.gov.bm/articles/covid-19-daily-release-{}-{}-{}'.format(i, month, y)
                 r = requests.get(url)
@@ -61,8 +61,13 @@ def downloadFiles():
                 # if we get here we didn't find data for this day
                 print("No data available for {} {} {}". format(i, month, y))
 
+def commitAndPush():
+    repo = git.Repo(getcwd())
+    if len(repo.untracked_files):
+        print(repo.untracked_files)
 
 try:
-    downloadFiles()
+    # downloadFiles()
+    commitAndPush()
 except Exception as e:
     print("Error occurred downloading files. Error was {}".format(e))

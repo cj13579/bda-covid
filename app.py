@@ -11,19 +11,30 @@ def getDailyRelease(day, month, year):
     # gets the data from the html file if it exists and returns a content object
     # otherwise returns None
 
-    home = os.path.join(os.getcwd(), 'src')
-    file = "covid-19-daily-release-{}-{}-{}".format(day, month, year)
+    home = os.getcwd()
+    home = home.replace('\\','/')
+    file = "src/covid-19-daily-release-{}-{}-{}.html".format(day, month, year)
     s = requests.Session()
-    s.mount('file://', FileAdapter())
-    r = s.get('file://{}/{}'.format(home, file))
+    if os.name == 'nt':
+        s.mount('file://', FileAdapter())
+        r = s.get('file:///{}/{}'.format(home, file))
+    else:
+        s.mount('file://', FileAdapter())
+        r = s.get('file://{}/{}'.format(home, file))
+    
 
     if r.status_code == 200: 
         return r.content
 
-    file = "covid-19-update-minister-healths-remarks-{}-{}-{}".format(day, month, year)
+    file = "src/covid-19-update-minister-healths-remarks-{}-{}-{}.html".format(day, month, year)
     s = requests.Session()
-    s.mount('file://', FileAdapter())
-    r = s.get('file://{}/{}'.format(home, file))
+
+    if os.name == 'nt':
+        s.mount('file://', FileAdapter())
+        r = s.get('file:///{}/{}'.format(home, file))
+    else:
+        s.mount('file://', FileAdapter())
+        r = s.get('file://{}/{}'.format(home, file))
 
     if r.status_code == 200: 
         return r.content        
@@ -54,6 +65,7 @@ for m in range(1,13):
             date = datetime.date(2099,12,31)
 
         if date <= datetime.date.today():
+            print("Checking if there is data for {} {} {}".format(i, month, y))
             data = getDailyRelease(str(i), month, str(y))
 
             if data:
@@ -147,19 +159,22 @@ for m in range(1,13):
 if len(positive_cases)>6:
     df = pd.DataFrame(positive_cases)
     df = calculateRollingAverage(window_size=7,df=df,index_key='date')
-    df.to_csv('html/csv/positive_cases.csv', index=False)
+    csv = os.path.join(os.getcwd(),'csv','positive_cases.csv')
+    df.to_csv(csv, index=False)
     print(df.iloc[[-1]])
     
 if len(positivity_rate)>6:
     df = pd.DataFrame(positivity_rate)
     df = calculateRollingAverage(window_size=7,df=df,index_key='date')
-    df.to_csv('html/csv/positivity_rate.csv', index=False)
+    csv = os.path.join(os.getcwd(),'csv','positivity_rate.csv')
+    df.to_csv(csv, index=False)
     print(df.iloc[[-1]])
 
 if len(active_cases)>6:
     df = pd.DataFrame(active_cases)
     df = calculateRollingAverage(window_size=7,df=df,index_key='date')
-    df.to_csv('html/csv/active_cases.csv', index=False)
+    csv = os.path.join(os.getcwd(),'csv','active_cases.csv')
+    df.to_csv(csv, index=False)
     print(df.iloc[[-1]])
 
 
