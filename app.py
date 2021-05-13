@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import re
 import datetime
 import pandas as pd
-from os import listdir, getcwd, path, mkdir
+from os import listdir, getcwd, path, mkdir, name
 import git
 
 source = path.join(getcwd(), 'src')
@@ -12,6 +12,7 @@ if not path.exists(source):
     mkdir(source)
 
 def downloadFiles():
+    print("Downloading data...")
     y=2021
     for m in range(1,13):
         month = datetime.date(y,m,1).strftime('%B').lower()
@@ -65,20 +66,28 @@ def downloadFiles():
                 print("No data available for {} {} {}". format(i, month, y))
 
 def commitAndPush():
+
     repo = git.Repo(getcwd())
-    if len(repo.untracked_files):
-        print(repo.untracked_files)
+    for item in repo.index.diff(None):
+        if 'csv' in item.a_path:
+            repo.index.add([item.a_path])
+
+    date = datetime.date.today().strftime("%d%B%Y")
+    commit_msg = "Add data from {}".format(date)
+    repo.index.commit(commit_msg)
+    origin = repo.remotes['origin']
+    origin.push()
 
 def getDailyRelease(day, month, year):
 
     # gets the data from the html file if it exists and returns a content object
     # otherwise returns None
 
-    home = os.getcwd()
+    home = getcwd()
     home = home.replace('\\','/')
     file = "src/covid-19-daily-release-{}-{}-{}.html".format(day, month, year)
     s = requests.Session()
-    if os.name == 'nt':
+    if name == 'nt':
         s.mount('file://', FileAdapter())
         r = s.get('file:///{}/{}'.format(home, file))
     else:
@@ -92,7 +101,7 @@ def getDailyRelease(day, month, year):
     file = "src/covid-19-update-minister-healths-remarks-{}-{}-{}.html".format(day, month, year)
     s = requests.Session()
 
-    if os.name == 'nt':
+    if name == 'nt':
         s.mount('file://', FileAdapter())
         r = s.get('file:///{}/{}'.format(home, file))
     else:
@@ -109,18 +118,16 @@ def calculateRollingAverage(window_size, df, index_key):
     df.set_index(index_key)
     return df
 
-# only working on 2021 data
-y =2021
-c=0
-pc=0
-
-# create empty lists for appending the data to
-positive_cases = []
-positivity_rate = []
-active_cases = []
-
-
 def htmlToCsv():
+    # only working on 2021 data
+    y =2021
+    # create empty lists for appending the data to
+    positive_cases = []
+    positivity_rate = []
+    active_cases = []
+    c=0
+    pc=0
+    print("Converting HTML to CSV")
     for m in range(1,13):
         month = datetime.date(y,m,1).strftime('%B').lower()
         for i in range(1,32):
@@ -253,4 +260,4 @@ try:
     # htmlToCsv()
     commitAndPush()
 except Exception as e:
-    print("Error occurred downloading files. Error was {}".format(e))
+    print("Error occurred. Error was {}".format(e))
