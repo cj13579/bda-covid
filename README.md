@@ -2,14 +2,11 @@
 
 A scraper and simple web page for displaying better Bermuda COVID-19 statistics.
 
-More to follow.
+https://cj13579.github.io/bda-covid
 
 ## Development
 
-This is a project written in Python and has two main files:
-
-* `dlPages.py` - Downloads data from [gov.bm](https://gov.bm).
-* `app.py` - Parses the data, calculates stats, creates CSV files
+This is a project written in Python and has one main file: `app.py`. 
 
 To get started with the project after cloning the repository:
 
@@ -17,5 +14,7 @@ To get started with the project after cloning the repository:
 2. Activate venv: `. env/bin/activate`
 3. Install dependencies: `pip install -r requirements.txt`
 
-There is also a notebook for getting started.
+There is also a notebook for exploring the data a bit more. For now, it just recreates the charts that are plotted in the JS file.
+
+To run a local version of the web page, change directories into the `docs` folder and run the following: `python -m http.server`. The address and port will be displayed on your command line. 
 
