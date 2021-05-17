@@ -66,18 +66,22 @@ def downloadFiles():
                 print("No data available for {} {} {}". format(i, month, y))
 
 def commitAndPush():
-
+    count = 0
     repo = git.Repo(getcwd())
     for item in repo.index.diff(None):
         if 'csv' in item.a_path:
             repo.index.add([item.a_path])
+            count = count + 1
 
-    date = datetime.date.today().strftime("%d%B%Y")
-    commit_msg = "Add data from {}".format(date)
-    repo.index.commit(commit_msg)
-    origin = repo.remotes['origin']
-    if not origin.push():
-        print("Unable to send new data")
+    if count > 0:
+        date = datetime.date.today().strftime("%d%B%Y")
+        commit_msg = "Add data from {}".format(date)
+        repo.index.commit(commit_msg)
+        origin = repo.remotes['origin']
+        if not origin.push():
+            print("Unable to send new data")
+    else:
+        print("No changes to push")
 
 def getDailyRelease(day, month, year):
 
@@ -257,8 +261,8 @@ def htmlToCsv():
     print(pc)
 
 try:
-    # downloadFiles()
-    # htmlToCsv()
+    downloadFiles()
+    htmlToCsv()
     commitAndPush()
 except Exception as e:
     print("Error occurred. Error was {}".format(e))
