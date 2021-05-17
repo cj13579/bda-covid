@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import re
 import datetime
 import pandas as pd
-from os import listdir, getcwd, path, mkdir, name, environ
+from os import listdir, getcwd, path, mkdir, name, getenv
 import git
 
 # https://www.cia.gov/the-world-factbook/countries/bermuda/#people-and-society
@@ -274,7 +274,7 @@ def htmlToCsv():
 try:
     downloadFiles()
     htmlToCsv()
-    if not environ['DEVMODE']: # only commit stuff when we're running "for realz"
+    if not getenv('DEVMODE'): # only commit stuff when we're running "for realz"
         commitAndPush()
 except Exception as e:
     print("Error occurred. Error was {}".format(e))
