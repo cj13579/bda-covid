@@ -2,7 +2,8 @@
 <html>
 <head>
 <meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
-<title>Bermuda COVID-19 Statistics</title></head>
+<title>Bermuda COVID-19 Statistics</title>
+</head>
 <body>
 <script src="https://code.highcharts.com/highcharts.js">
 </script>
@@ -14,25 +15,28 @@
 </script>
 <script src="https://code.highcharts.com/modules/data.js">
 </script>
-<h1>Bermuda COVID-19 Statistics</h1>
+<h1 id='bermuda-covid-19-statistics'>Bermuda COVID-19 Statistics</h1>
 <p>The daily press-releases and conferences are great and frustrating all at the same time. They tell you a lot of information but not, what I think, is the really useful and important stuff. This is an attempt to break down the numbers released into some more useful things:</p>
 <ul>
-<li><strong>Moving averages - </strong>Data is noisy. Calculating simple moving averages (I use 7 days windows) gives us a much clearer view about where a data point is trending.</li>
+<li><strong>Moving averages - </strong>Data is noisy. Calculating simple moving averages gives us a much clearer view about where a data point is trending.</li>
 <li><strong>New metrics</strong> - The Government have made decisions on positivity rate previously but they have only very recently started releasing this number. I have back dated the calculation to the beginning of th year.</li>
 
 </ul>
-<h2>Disclaimer</h2>
+<h2 id='disclaimer'>Disclaimer</h2>
 <p>This data is scraped (poorly) from <a href='https://www.gov.bm'>gov.bm</a> and I&#39;ve not validated what&#39;s been collected. You should absolutely not use these numbers for anything important.</p>
+<h3 id='positivity-rate'>Positivity Rate</h3>
 <figure class="highcharts-figure">
     <div id="posRateContainer"></div>
 </figure>
+<p>On May 12, 2020 the World Health Organization (WHO) advised governments that before reopening, rates of positivity in testing (ie, out of all tests conducted, how many came back positive for COVID-19) of should remain at 5% or lower for at least 14 days. The vertical red line on this chart represents 14 days ago from today.</p>
+<h3 id='new-positive-cases'>New positive cases</h3>
 <figure class="highcharts-figure">
     <div id="newPositiveCasesContainer"></div>
 </figure>
+<h3 id='active-cases'>Active cases</h3>
 <figure class="highcharts-figure">
     <div id="activeCasesContainer"></div>
 </figure>
-<p>&nbsp;</p>
 <script>
 posRateOptions = {
         chart: {
@@ -47,10 +51,17 @@ posRateOptions = {
             split: false
         },
         subtitle: {
-            text: "Daily and 7 day rolling average of Bermuda's COVID-19 positivity rates."
+            text: "Daily and 14 day rolling average of Bermuda's COVID-19 positivity rates."
         },
         data: {
             csvURL: 'https://raw.githubusercontent.com/cj13579/bda-covid/main/csv/positivity_rate.csv',
+        },
+        xAxis: {
+            plotLines: [{
+                color: '#FF0000',
+                width: 2,
+                value: fortnightAgo
+            }]
         }
     }
     newPositiveCasesOptions = {

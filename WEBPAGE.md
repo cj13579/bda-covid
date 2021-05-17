@@ -22,21 +22,24 @@ The daily press-releases and conferences are great and frustrating all at the sa
 
 This data is scraped (poorly) from [gov.bm](https://www.gov.bm) and I've not validated what's been collected. You should absolutely not use these numbers for anything important.
 
+### Positivity Rate
+
 <figure class="highcharts-figure">
     <div id="posRateContainer"></div>
 </figure>
-
 On May 12, 2020 the World Health Organization (WHO) advised governments that before reopening, rates of positivity in testing (ie, out of all tests conducted, how many came back positive for COVID-19) of should remain at 5% or lower for at least 14 days. The vertical red line on this chart represents 14 days ago from today.
+
+### New positive cases
 
 <figure class="highcharts-figure">
     <div id="newPositiveCasesContainer"></div>
 </figure>
 
+### Active cases
+
 <figure class="highcharts-figure">
     <div id="activeCasesContainer"></div>
 </figure>
-
-
 <script>
 posRateOptions = {
         chart: {
