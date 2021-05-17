@@ -76,7 +76,7 @@ posRateOptions = {
             text: 'Bermuda COVID-19 new positive cases'
         },
         tooltip: {
-            valueDecimals: 2,
+            valueDecimals: 0,
             shared: true,
             split: false
         },
@@ -95,7 +95,7 @@ activeCasesOptions = {
         text: 'Bermuda COVID-19 Active Cases'
     },
     tooltip: {
-        valueDecimals: 2,
+        valueDecimals: 0,
         shared: true,
         split: false
     },
