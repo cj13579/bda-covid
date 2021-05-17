@@ -10,7 +10,6 @@ import git
 
 # https://www.cia.gov/the-world-factbook/countries/bermuda/#people-and-society
 population = 72084
-devMode = environ['DEVMODE'] # set from launch.json in vscode
 
 source = path.join(getcwd(), 'src')
 if not path.exists(source):
@@ -275,7 +274,7 @@ def htmlToCsv():
 try:
     downloadFiles()
     htmlToCsv()
-    if not devMode: # only commit stuff when we're running "for realz"
+    if not environ['DEVMODE']: # only commit stuff when we're running "for realz"
         commitAndPush()
 except Exception as e:
     print("Error occurred. Error was {}".format(e))
