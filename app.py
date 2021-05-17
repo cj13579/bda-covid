@@ -1,11 +1,16 @@
+from numpy import column_stack
 import requests
 from requests_file import FileAdapter
 from bs4 import BeautifulSoup
 import re
 import datetime
 import pandas as pd
-from os import listdir, getcwd, path, mkdir, name
+from os import listdir, getcwd, path, mkdir, name, environ
 import git
+
+# https://www.cia.gov/the-world-factbook/countries/bermuda/#people-and-society
+population = 72084
+devMode = environ['DEVMODE'] # set from launch.json in vscode
 
 source = path.join(getcwd(), 'src')
 if not path.exists(source):
@@ -119,8 +124,13 @@ def getDailyRelease(day, month, year):
     return None
 
 def calculateRollingAverage(window_size, df, index_key):
-    df['7 day rolling average'] = df.iloc[:,1].rolling(window=window_size).mean()
+    column_name = '{} day rolling average'.format(window_size)
+    df[column_name] = df.iloc[:,1].rolling(window=window_size).mean()
     df.set_index(index_key)
+    return df
+
+def calculateCasesPer100k(df, population):
+    df['Cases per 100k'] = (df['7 day rolling average']/population)*100000
     return df
 
 def htmlToCsv():
@@ -234,13 +244,14 @@ def htmlToCsv():
     if len(positive_cases)>6:
         df = pd.DataFrame(positive_cases)
         df = calculateRollingAverage(window_size=7,df=df,index_key='date')
+        df = calculateCasesPer100k(df, population)
         csv = path.join(getcwd(),'csv','positive_cases.csv')
         df.to_csv(csv, index=False)
         print(df.iloc[[-1]])
         
     if len(positivity_rate)>6:
         df = pd.DataFrame(positivity_rate)
-        df = calculateRollingAverage(window_size=7,df=df,index_key='date')
+        df = calculateRollingAverage(window_size=14,df=df,index_key='date')
         csv = path.join(getcwd(),'csv','positivity_rate.csv')
         df.to_csv(csv, index=False)
         print(df.iloc[[-1]])
@@ -248,6 +259,7 @@ def htmlToCsv():
     if len(active_cases)>6:
         df = pd.DataFrame(active_cases)
         df = calculateRollingAverage(window_size=7,df=df,index_key='date')
+        df = calculateCasesPer100k(df, population)
         csv = path.join(getcwd(),'csv','active_cases.csv')
         df.to_csv(csv, index=False)
         print(df.iloc[[-1]])
@@ -263,6 +275,7 @@ def htmlToCsv():
 try:
     downloadFiles()
     htmlToCsv()
-    commitAndPush()
+    if not devMode: # only commit stuff when we're running "for realz"
+        commitAndPush()
 except Exception as e:
     print("Error occurred. Error was {}".format(e))
