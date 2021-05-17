@@ -41,6 +41,7 @@ On May 12, 2020 the World Health Organization (WHO) advised governments that bef
     <div id="activeCasesContainer"></div>
 </figure>
 <script>
+var fortnightAgo = new Date(Date.now() - 12096e5);
 posRateOptions = {
         chart: {
             type: 'spline'
