@@ -11,7 +11,7 @@ title: Bermuda COVID-19 Statistics
 </script>
 <script src="https://code.highcharts.com/modules/data.js">
 </script>
-# Bermuda COVID-19 Statistics
+# Bermuda COVID-19 "Dashboard"
 
 ## Key statistics
 
@@ -27,9 +27,7 @@ title: Bermuda COVID-19 Statistics
 
 The daily press-releases and conferences are great and frustrating all at the same time. They provide useful metrics but not the same numbers as are reported by the likes of the BBC which make comparing the situation in Bermuda to other countries more difficult. This site is an attempt to solve that problem.
 
-## Disclaimer
 
-This data is scraped (poorly) from [gov.bm](https://www.gov.bm) and I have not validated what has been collected. I have only collected data from the start of 2021. You should absolutely not use these numbers for anything important.
 
 ### Positivity Rate
 
@@ -119,3 +117,16 @@ Highcharts.chart('posRateContainer', posRateOptions);
 Highcharts.chart('activeCasesContainer', activeCasesOptions);
 Highcharts.chart('newPositiveCasesContainer', newPositiveCasesOptions);
 </script>
+
+## Disclaimer
+
+This data is scraped (poorly) from [gov.bm](https://www.gov.bm) and I have not validated what has been collected. I have only collected data from the start of 2021. You should absolutely not use these numbers for anything important.
+
+## References
+
+The population number (used to calculate per 100,000 statistic is take from: https://www.cia.gov/the-world-factbook/countries/bermuda/#people-and-society    
+
+Data is sourced from either the daily update article or the Minister of Health's remarks published at https://gov.bm/coronavirus-news
+
+Key statistic ideas were taken from the BBC: https://www.bbc.com/news/uk-51768274
+

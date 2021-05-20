@@ -8,32 +8,14 @@ import datetime
 import pandas as pd
 from os import listdir, getcwd, path, mkdir, name, getenv
 import git
-import tempfile
 import subprocess
-
-
-# based on https://www.bbc.com/news/uk-51768274
-
-# cases per 100k in the latest full week (sun-sat)
-# total cases in the latest full week
-# diff compared to the previous full week to "latest" week
-# total cases (YTD)
-# total deaths
-
-
-# seven day average of daily cases
 
 # total deaths 
 #     with 3m trend
-
-
 # total cases
 #     with 3month trend
-
-
 # people in hospital
 #     with 3 month trend
-
 # vaccines given!!
 #     with 3 month trend
 
