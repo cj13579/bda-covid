@@ -509,10 +509,10 @@ def updateHTML(one_week_ago_per_100k, total_ytd, one_week_ago, diff, week_start,
     args = ['pandoc', 'WEBPAGE.md', '-o', fileout]
     subprocess.check_call(args)
 
-    with open(fileout, 'r') as file:
+    with open(fileout, 'r', encoding='utf-8') as file:
         content = file.readlines()
 
-    with open(fileout, 'w') as file:
+    with open(fileout, 'w', encoding='utf-8') as file:
         for line in content:
 
             if 'LAST_WEEK_CASES_PER_100K' in line:
