@@ -122,10 +122,10 @@ def getDailyRelease(day, month, year):
 
     return None
 
-def calculateRollingAverage(window_size, df, index_key):
+def calculateRollingAverage(window_size, df, col_to_roll):
     column_name = '{} day rolling average'.format(window_size)
-    df[column_name] = df.iloc[:,1].rolling(window=window_size).mean()
-    df.set_index(index_key)
+    df[column_name] = df[col_to_roll].rolling(window=window_size).mean()
+    
     return df
 
 def calculateCasesPer100k(df, population):
@@ -139,6 +139,7 @@ def htmlToCsv():
     positive_cases = []
     positivity_rate = []
     active_cases = []
+    case_breakdown = {}
     c=0
     pc=0
     print("Converting HTML to CSV")
@@ -161,11 +162,15 @@ def htmlToCsv():
                     for p in soup.find_all("p"):
                         if p.text:
                             #results &positive
+                            imported = None
+                            known_contact = None
+                            unknown_contact = None
+                            under_investigation = None
+
                             results_match = '.*\s(?P<results>\d+).*test\sresults.*'
                             if re.match(results_match, p.text):
                                 match = re.match(results_match, p.text)
                                 results = int(match.group('results'))
-
 
                                 #positive
                                 positive = None
@@ -213,6 +218,7 @@ def htmlToCsv():
                                     pos_rate = (positive / results) *100
                                     positive_cases.append({
                                         'date':date,
+                                        # 'Test results received': results,    
                                         'Positive Cases': positive
                                     })
                                     positivity_rate.append({'date':date, 'Positivity Rate':pos_rate})
@@ -220,11 +226,78 @@ def htmlToCsv():
                                 found = True
                                 # print('The positivity rate was {}% on {} {}'.format(str(pos_rate), str(i), month))
                             
-
-
                             #deaths
-                            #active cases
                             
+                            #imported
+                            if re.match('.*\s(?P<imported>\d+)\sare\sImported.*',p.text):
+                                match = re.match('.*\s(?P<imported>\d+)\sare\sImported.*',p.text)
+                                imported = match.group('imported')
+                                try:
+                                    case_breakdown[date].update({
+                                        'date': date,
+                                        'Imported': imported,
+      
+                                    })
+                                except KeyError:
+                                    case_breakdown[date] = {
+                                        'date': date,
+                                        'Imported': imported,
+                                    }
+                            # local transmission known contact
+                            if re.match('.*\s(?P<localKnown>\d+)\sare\sLocal\stransmission\swith\sknown.*',p.text):
+                                match = re.match('.*\s(?P<localKnown>\d+)\sare\sLocal\stransmission\swith\sknown.*',p.text)
+                                known_contact = match.group('localKnown')
+                                try:
+                                    case_breakdown[date].update({
+                                        'date': date,
+                                        'Local - Known contact': known_contact,
+
+                                    })
+                                except KeyError:
+                                    case_breakdown[date] = {
+                                        'date': date,
+                                        'Local - Known contact': known_contact,
+                                    }
+
+                            # local transmission unknown contact
+                            if re.match('.*\s(?P<localUnknown>\d+)\sare\sLocal\stransmission\swith\san\sunknown.*',p.text):
+                                match = re.match('.*\s(?P<localUnknown>\d+)\sare\sLocal\stransmission\swith\san\sunknown.*',p.text)
+                                unknown_contact = match.group('localUnknown')
+
+                                try:
+                                    case_breakdown[date].update({
+                                        'date': date,
+
+                                        'Local - Unknown contact': unknown_contact,
+
+                                    })
+                                except KeyError:
+                                    case_breakdown[date] = {
+                                        'date': date,
+                                        'Local - Unknown contact': unknown_contact,
+                                    }
+                            # under investigation
+                            if re.match('.*\s(?P<underInvestigation>\d+)\sare\sUnder\sInvestigation.*',p.text):
+                                match = re.match('.*\s(?P<underInvestigation>\d+)\sare\sUnder\sInvestigation.*',p.text)
+                                under_investigation = match.group('underInvestigation')
+                                try:
+                                    case_breakdown[date].update({
+                                        'date': date,
+                                        'Under investigation': under_investigation
+                                    })
+                                except KeyError:
+                                    case_breakdown[date] = {
+                                        'date': date,
+                                        'Under investigation': under_investigation
+                                    }
+
+
+
+
+                            # mean age of active cases
+
+
+                            #active cases
                             if re.match('.*\s(?P<active>\d+)\sactive\scases.*',p.text):
                                 match = re.match('.*\s(?P<active>\d+)\sactive\scases.*',p.text)
                                 active = match.group('active')
@@ -237,12 +310,14 @@ def htmlToCsv():
                                 found = True
                     if not found:
                         print("Press release found for {}-{}-{} but didn't find active case numbers.".format(str(i),month,str(y)))
+
                 else:
                     print('No data available for {} {}'.format(str(i), month))
     # save the data off for later and calculate rolling averages
     if len(positive_cases)>6:
         df = pd.DataFrame(positive_cases)
-        df = calculateRollingAverage(window_size=7,df=df,index_key='date')
+        df.set_index('date')
+        df = calculateRollingAverage(window_size=7,df=df,col_to_roll='Positive Cases')
         df = calculateCasesPer100k(df, population)
         csv = path.join(getcwd(),'csv','positive_cases.csv')
         df.to_csv(csv, index=False)
@@ -250,16 +325,24 @@ def htmlToCsv():
         
     if len(positivity_rate)>6:
         df = pd.DataFrame(positivity_rate)
-        df = calculateRollingAverage(window_size=14,df=df,index_key='date')
+        df.set_index('date')
+        df = calculateRollingAverage(window_size=14,df=df,col_to_roll='Positivity Rate')
         csv = path.join(getcwd(),'csv','positivity_rate.csv')
         df.to_csv(csv, index=False)
         print(df.iloc[[-1]])
 
     if len(active_cases)>6:
         df = pd.DataFrame(active_cases)
-        df = calculateRollingAverage(window_size=7,df=df,index_key='date')
-        df = calculateCasesPer100k(df, population)
+        df.set_index('date')
+        df = calculateRollingAverage(window_size=7,df=df,col_to_roll='Active Cases')
         csv = path.join(getcwd(),'csv','active_cases.csv')
+        df.to_csv(csv, index=False)
+        print(df.iloc[[-1]])
+
+    if len(case_breakdown)>6:
+        df = pd.DataFrame(list(case_breakdown.values()))
+        df.set_index('date')
+        csv = path.join(getcwd(),'csv','case_breakdown.csv')
         df.to_csv(csv, index=False)
         print(df.iloc[[-1]])
 
@@ -272,7 +355,7 @@ def htmlToCsv():
     print(pc)
 
 try:
-    downloadFiles()
+    # downloadFiles()
     htmlToCsv()
     if not getenv('DEVMODE'): # only commit stuff when we're running "for realz"
         commitAndPush()
