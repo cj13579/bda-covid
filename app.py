@@ -1,4 +1,3 @@
-from numpy import column_stack
 import requests
 from requests_file import FileAdapter
 from bs4 import BeautifulSoup
@@ -17,57 +16,95 @@ if not path.exists(source):
 
 def downloadFiles():
     print("Downloading data...")
-    y=2021
-    for m in range(1,13):
-        month = datetime.date(y,m,1).strftime('%B').lower()
-        for i in range(1,32):
 
-            found=False
-            # don't download files that we already have 
-            # probably more efficient to load this into a list once but, watevs
-            pattern = re.compile(".*covid-19.*-{}-{}-{}".format(i,month,y))
-
-            for filepath in listdir(source):
-                if pattern.match(filepath):
-                    print("Already have data for {} {} {}".format(i,month,y))
-                    found = True
-                    break
-            if found:
-                continue
+    known_files = listdir(source)
+    known_missing = []
+    known_missing_csv = path.join(source,'known_missing.csv')
+    if path.exists(known_missing_csv):
+        origlist = pd.read_csv(known_missing_csv).values.tolist()
+        for sublist in origlist:
+            for item in sublist:
+                known_missing.append(str(item))
         
-            # check if the date is a valid date. do this cos im just iterating ha
-            try:
-                date = datetime.date(y,m,i)
-            except Exception as e:
-                date = datetime.date(2099,12,31)
 
-            # if its a valid date and its less than or equal to today then do something
-            if date <= datetime.date.today():
+    date = datetime.datetime(year=2021,month=1,day=1)
 
-                # tell the world
-                print("Getting data for {} {} {}".format(i, month, y))
+    while date <= date.today():
 
-                url = 'https://www.gov.bm/articles/covid-19-daily-release-{}-{}-{}'.format(i, month, y)
-                r = requests.get(url)
-                if r.status_code == 200: 
-                    htmlfile = path.join(source,'covid-19-daily-release-{}-{}-{}.html'.format(str(i),month,str(y)))
+        i = date.day
+        month = date.strftime('%B').lower()
+        y = date.year
+        found=False
 
-                    with open(htmlfile, 'wb') as file:
-                        file.write(r.content)
-                    print("Retrieved data for {} {} {}".format(i, month, y))
-                    continue
-                else:
-                    url = 'https://www.gov.bm/articles/covid-19-update-minister-healths-remarks-{}-{}-{}'.format(i,month,y)
-                    r = requests.get(url)
-                    if r.status_code == 200:
-                        htmlfile = path.join(source,'covid-19-update-minister-healths-remarks-{}-{}-{}.html'.format(str(i),month,str(y)) )
-                        with open(htmlfile, 'wb') as file:
-                            file.write(r.content)
-                        print("Retrieved data for {} {} {}".format(i, month, y))
-                        continue
-                
-                # if we get here we didn't find data for this day
-                print("No data available for {} {} {}". format(i, month, y))
+        # check for known missing
+        checker = date.strftime('%Y%m%d')
+        if checker in known_missing:
+            print("We know there is data missing for this date. Skipping {} {} {}".format(i,month,y))
+            date = date + datetime.timedelta(days=1)
+            continue
+
+        # don't download files that we already have 
+        # probably more efficient to load this into a list once but, watevs
+        pattern = re.compile(".*covid-19.*-{}-{}-{}".format(i,month,y))
+
+        for filepath in known_files:
+            if pattern.match(filepath):
+                print("Already have data for {} {} {}".format(i,month,y))
+                found = True
+                break
+
+        if found:
+            date = date + datetime.timedelta(days=1)
+            continue
+
+
+        # tell the world
+        print("Getting data for {} {} {}".format(i, month, y))
+
+        url = 'https://www.gov.bm/articles/covid-19-daily-release-{}-{}-{}'.format(i, month, y)
+        r = requests.get(url)
+        if r.status_code == 200: 
+            htmlfile = path.join(source,'covid-19-daily-release-{}-{}-{}.html'.format(str(i),month,str(y)))
+
+            with open(htmlfile, 'wb') as file:
+                file.write(r.content)
+            print("Retrieved data for {} {} {}".format(i, month, y))
+            date = date + datetime.timedelta(days=1)
+            continue
+
+        url = 'https://www.gov.bm/articles/covid-19-update-minister-healths-remarks-{}-{}-{}'.format(i,month,y)
+        r = requests.get(url)
+        if r.status_code == 200:
+            htmlfile = path.join(source,'covid-19-update-minister-healths-remarks-{}-{}-{}.html'.format(str(i),month,str(y)) )
+            with open(htmlfile, 'wb') as file:
+                file.write(r.content)
+            print("Retrieved data for {} {} {}".format(i, month, y))
+            date = date + datetime.timedelta(days=1)
+            continue
+
+        #variation on above url that's been seen
+        url = 'https://www.gov.bm/articles/covid-19-update-minister-health-remarks-{}-{}-{}'.format(i,month,y)
+        r = requests.get(url)
+        if r.status_code == 200:
+            htmlfile = path.join(source,'covid-19-update-minister-healths-remarks-{}-{}-{}.html'.format(str(i),month,str(y)) )
+            with open(htmlfile, 'wb') as file:
+                file.write(r.content)
+            print("Retrieved data for {} {} {}".format(i, month, y))
+            date = date + datetime.timedelta(days=1)
+            continue
+        
+        todayminusthree = date + datetime.timedelta(days=3)
+        if date <= todayminusthree:
+            print("Didn't find data for old date. won't do this again")
+            known_missing.append(date.strftime('%Y%m%d'))
+            date = date + datetime.timedelta(days=1)
+            continue
+
+        # if we get here we didn't find data for this day
+        print("No data available for {} {} {}. Will try again". format(i, month, y))
+        date = date + datetime.timedelta(days=1)
+
+    pd.DataFrame(known_missing).to_csv(known_missing_csv,index=None)
 
 def commitAndPush():
     count = 0
@@ -180,6 +217,9 @@ def htmlToCsv():
                                     if re.match(words_pos, p.text):
                                         match = re.match(words_pos, p.text)
                                         pw = match.group('positive')
+
+                                        if pw == 'none':
+                                            positive=0
                                         
                                         if pw == 'one':
                                             positive=1
