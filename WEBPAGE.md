@@ -13,14 +13,23 @@ title: Bermuda COVID-19 Statistics
 </script>
 # Bermuda COVID-19 Statistics
 
-The daily press-releases and conferences are great and frustrating all at the same time. They tell you a lot of information but not, what I think, is the really useful and important stuff. This is an attempt to break down the numbers released into some more useful things:
+## Key statistics
 
-* **Moving averages - **Data is noisy. Calculating simple moving averages gives us a much clearer view about where a data point is trending.
-* **New metrics** - The Government have made decisions on positivity rate previously but they have only very recently started releasing this number. I have back dated the calculation to the beginning of th year.
+**LAST_WEEK_CASES_PER_100K** cases per 100,000 people in the week WEEK_FROM - WEEK_TO.
+
+**LAST_WEEK_CASES** cases in the week WEEK_FROM - WEEK_TO.
+
+**DIFF** compared with the previous week.
+
+**CASES_YEAR_TO_DATE** total cases in 2021.
+
+## Why?
+
+The daily press-releases and conferences are great and frustrating all at the same time. They provide useful metrics but not the same numbers as are reported by the likes of the BBC which make comparing the situation in Bermuda to other countries more difficult. This site is an attempt to solve that problem.
 
 ## Disclaimer
 
-This data is scraped (poorly) from [gov.bm](https://www.gov.bm) and I've not validated what's been collected. You should absolutely not use these numbers for anything important.
+This data is scraped (poorly) from [gov.bm](https://www.gov.bm) and I have not validated what has been collected. I have only collected data from the start of 2021. You should absolutely not use these numbers for anything important.
 
 ### Positivity Rate
 
