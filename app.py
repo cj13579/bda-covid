@@ -549,8 +549,8 @@ def updateHTML(one_week_ago_per_100k, total_ytd, one_week_ago, diff, week_start,
 
 
 try:
-    # downloadFiles()
-    # htmlToCsv()
+    downloadFiles()
+    htmlToCsv()
     one_week_ago_per_100k, total_ytd, one_week_ago, diff, week_start, week_end = calculateDashStats()
     updateHTML(one_week_ago_per_100k, total_ytd, one_week_ago, diff, week_start, week_end)
     if not getenv('DEVMODE'): # only commit stuff when we're running "for realz"
