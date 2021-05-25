@@ -105,8 +105,8 @@ def downloadFiles():
             date = date + datetime.timedelta(days=1)
             continue
         
-        todayminusthree = date + datetime.timedelta(days=3)
-        if date <= todayminusthree:
+        todayminusseven = datetime.datetime.now() - date
+        if todayminusseven.days>7:
             print("Didn't find data for old date. won't do this again")
             known_missing.append(date.strftime('%Y%m%d'))
             date = date + datetime.timedelta(days=1)
