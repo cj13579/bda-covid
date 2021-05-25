@@ -123,7 +123,7 @@ def commitAndPush():
     count = 0
     repo = git.Repo(getcwd())
     for item in repo.index.diff(None):
-        if 'csv' in item.a_path:
+        if 'csv' in item.a_path or 'index.html' in item.a_path:
             repo.index.add([item.a_path])
             count = count + 1
 
